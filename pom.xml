@@ -371,12 +371,10 @@
 
   <repositories>
     <repository>
-      <id>Snapshots</id>
-      <name>Snapshot Repository</name>
-      <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
