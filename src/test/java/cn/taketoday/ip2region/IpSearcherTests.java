@@ -82,6 +82,13 @@ class IpSearcherTests {
   }
 
   @Test
+  void forDefaultResourceLocation() {
+    IpSearcher ipSearcher = IpSearcher.forDefaultResourceLocation();
+    IpLocation ipLocation = ipSearcher.find("118.113.138.53");
+    assertThat(ipLocation).isNotNull();
+  }
+
+  @Test
   void forHttpResource() {
     IpSearcher ipSearcher = IpSearcher.forResource(UrlResource.from("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.xdb"));
     IpLocation ipLocation = ipSearcher.find("118.113.138.53");

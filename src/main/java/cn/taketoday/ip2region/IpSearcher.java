@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import cn.taketoday.core.io.ClassPathResource;
 import cn.taketoday.core.io.FileSystemResource;
 import cn.taketoday.core.io.Resource;
 import cn.taketoday.lang.Assert;
@@ -46,6 +47,8 @@ import cn.taketoday.lang.Nullable;
  * @since 1.0 2023/2/14 17:26
  */
 public abstract class IpSearcher {
+  private static final String DEFAULT_LOCATION = "ip2region.xdb";
+
   // constant defined copied from the xdb maker
   private static final int HeaderInfoLength = 256;
   private static final int VectorIndexRows = 256;
@@ -179,6 +182,13 @@ public abstract class IpSearcher {
   }
 
   // Static Factory Methods
+
+  /**
+   * 使用默认的 {@link #DEFAULT_LOCATION classpath:ip2region.xdb}
+   */
+  public static IpSearcher forDefaultResourceLocation() {
+    return forResource(new ClassPathResource(DEFAULT_LOCATION));
+  }
 
   /**
    * Static factory methods for file path
