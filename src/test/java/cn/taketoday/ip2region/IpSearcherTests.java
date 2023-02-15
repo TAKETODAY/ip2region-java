@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import cn.taketoday.core.io.ClassPathResource;
+import cn.taketoday.core.io.UrlResource;
 import cn.taketoday.util.StreamUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author <a href="https://github.com/TAKETODAY">Harry Yang</a>
@@ -35,31 +38,54 @@ import cn.taketoday.util.StreamUtils;
 class IpSearcherTests {
 
   @Test
-  void test() throws IOException {
-
+  void forBuffer() throws IOException {
     ClassPathResource resource = new ClassPathResource("ip2region.xdb");
-
     try (InputStream inputStream = resource.getInputStream()) {
-      byte[] bytes = StreamUtils.copyToByteArray(inputStream);
-      IpSearcher ipSearcher = IpSearcher.forBuffer(bytes);
+      IpSearcher ipSearcher = IpSearcher.forBuffer(StreamUtils.copyToByteArray(inputStream));
 
-      String search = ipSearcher.search("118.113.138.53");
-
-      System.out.println(search);
+      String location = ipSearcher.search("118.113.138.53");
+      assertThat(location).isNotNull();
     }
   }
 
   @Test
-  void find() throws IOException {
-    ClassPathResource resource = new ClassPathResource("ip2region.xdb");
+  void local() {
+    IpSearcher ipSearcher = IpSearcher.forResource(new ClassPathResource("ip2region.xdb"));
+    var location = ipSearcher.find("127.0.0.1");
+    assertThat(location).isNotNull();
+    assertThat(IpLocation.defaultValue(location.getIsp())).isEqualTo(IpLocation.LAN);
+    assertThat(IpLocation.defaultValue(location.getArea())).isEqualTo(IpLocation.UNKNOWN);
+    assertThat(IpLocation.defaultValue(location.getCountry())).isEqualTo(IpLocation.UNKNOWN);
+    assertThat(IpLocation.defaultValue(location.getProvince())).isEqualTo(IpLocation.UNKNOWN);
+    assertThat(IpLocation.defaultValue(location.getCity())).isEqualTo(IpLocation.LAN);
+  }
 
-    try (InputStream inputStream = resource.getInputStream()) {
-      byte[] bytes = StreamUtils.copyToByteArray(inputStream);
-      IpSearcher ipSearcher = IpSearcher.forBuffer(bytes);
+  @Test
+  void find() {
+    IpSearcher ipSearcher = IpSearcher.forResource(new ClassPathResource("ip2region.xdb"));
+    IpLocation location = ipSearcher.find("118.113.138.53");
+    assertThat(location).isNotNull();
+  }
 
-      IpLocation search = ipSearcher.find("118.113.138.53");
-      System.out.println(search);
-    }
+  @Test
+  void defaultValue() {
+    assertThat(IpLocation.defaultValue(null)).isEqualTo(IpLocation.UNKNOWN);
+    assertThat(IpLocation.defaultValue("0")).isEqualTo(IpLocation.UNKNOWN);
+    assertThat(IpLocation.defaultValue("内网IP")).isEqualTo(IpLocation.LAN);
+  }
+
+  @Test
+  void forResource() {
+    IpSearcher ipSearcher = IpSearcher.forResource(new ClassPathResource("ip2region.xdb"));
+    IpLocation ipLocation = ipSearcher.find("118.113.138.53");
+    assertThat(ipLocation).isNotNull();
+  }
+
+  @Test
+  void forHttpResource() {
+    IpSearcher ipSearcher = IpSearcher.forResource(UrlResource.from("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.xdb"));
+    IpLocation ipLocation = ipSearcher.find("118.113.138.53");
+    assertThat(ipLocation).isNotNull();
   }
 
 }

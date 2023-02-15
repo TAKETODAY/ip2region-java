@@ -23,8 +23,11 @@ package cn.taketoday.ip2region;
 import java.util.Objects;
 
 import cn.taketoday.core.style.ToStringBuilder;
+import cn.taketoday.lang.Nullable;
 
 /**
+ * Ip 地理位置
+ *
  * @author <a href="https://github.com/TAKETODAY">Harry Yang</a>
  * @since 1.0 2023/2/14 17:57
  */
@@ -32,6 +35,7 @@ public class IpLocation {
 
   /** 本地网络 */
   public static final String LAN = "LAN";
+
   /** 未知地址 */
   public static final String UNKNOWN = "UNKNOWN";
 
@@ -42,11 +46,41 @@ public class IpLocation {
   private final String isp;
 
   public IpLocation(String country, String province, String city, String area, String isp) {
-    this.country = country;
-    this.province = province;
-    this.city = city;
-    this.area = area;
-    this.isp = isp;
+    this.country = defaultValue(country);
+    this.province = defaultValue(province);
+    this.city = defaultValue(city);
+    this.area = defaultValue(area);
+    this.isp = defaultValue(isp);
+  }
+
+  static String defaultValue(@Nullable String area) {
+    if (area == null || "0".equals(area)) {
+      return UNKNOWN;
+    }
+    else if ("内网IP".equals(area)) {
+      return LAN;
+    }
+    return area;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public String getProvince() {
+    return province;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public String getArea() {
+    return area;
+  }
+
+  public String getIsp() {
+    return isp;
   }
 
   @Override

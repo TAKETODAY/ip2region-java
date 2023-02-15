@@ -20,25 +20,42 @@
 
 package cn.taketoday.ip2region;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import cn.taketoday.core.io.FileSystemResource;
+import cn.taketoday.core.io.Resource;
+import cn.taketoday.lang.Assert;
+import cn.taketoday.lang.Nullable;
+
 /**
+ * 离线IP地址定位 API, 线程安全
+ * <p>
+ * 核心算法代码来自 <a href="https://github.com/lionsoul2014/ip2region">ip2region</a>
+ * <p>
+ * 例子
+ * <pre> {@code
+ *  static final IpSearcher ipSearcher = IpSearcher.forResource(new ClassPathResource("ip2region.xdb"));
+ *  IpLocation location = ipSearcher.find("8.8.8.8");
+ * }
+ * </pre>
+ *
  * @author <a href="https://github.com/TAKETODAY">Harry Yang</a>
  * @since 1.0 2023/2/14 17:26
  */
 public abstract class IpSearcher {
-
   // constant defined copied from the xdb maker
-  public static final int HeaderInfoLength = 256;
-  public static final int VectorIndexRows = 256;
-  public static final int VectorIndexCols = 256;
-  public static final int VectorIndexSize = 8;
-  public static final int SegmentIndexSize = 14;
+  private static final int HeaderInfoLength = 256;
+  private static final int VectorIndexRows = 256;
+  private static final int VectorIndexCols = 256;
+  private static final int VectorIndexSize = 8;
+  private static final int SegmentIndexSize = 14;
 
-  public static final byte[] shiftIndex = { 24, 16, 8, 0 };
+  private static final byte[] shiftIndex = { 24, 16, 8, 0 };
 
+  @Nullable
   public IpLocation find(String ip) {
     String search = search(ip);
     if (search != null) {
@@ -48,18 +65,18 @@ public abstract class IpSearcher {
     return null;
   }
 
-  public String search(String ipStr) {
-    long ip = checkIP(ipStr);
+  @Nullable
+  public String search(String ipString) {
+    long ip = checkIP(ipString);
     return search(ip);
   }
 
+  @Nullable
   public String search(long ip) {
     int il0 = (int) ((ip >> 24) & 0xFF);
     int il1 = (int) ((ip >> 16) & 0xFF);
 
     int idx = il0 * VectorIndexCols * VectorIndexSize + il1 * VectorIndexSize;
-
-    // System.out.printf("il0: %d, il1: %d, idx: %d\n", il0, il1, idx);
 
     final int indexPointerOffset = getIndexPointerOffset(idx);
     final byte[] indexPointerBuffer = getIndexPointerBuffer(idx);
@@ -115,63 +132,6 @@ public abstract class IpSearcher {
 
   protected abstract void read(int offset, byte[] buffer);
 
-  // --- static cache util function
-
-  public static Header loadHeader(RandomAccessFile handle) throws IOException {
-    handle.seek(0);
-    final byte[] buff = new byte[HeaderInfoLength];
-    handle.read(buff);
-    return new Header(buff);
-  }
-
-  public static Header loadHeaderFromFile(String dbPath) throws IOException {
-    final RandomAccessFile handle = new RandomAccessFile(dbPath, "r");
-    final Header header = loadHeader(handle);
-    handle.close();
-    return header;
-  }
-
-  public static byte[] loadVectorIndex(RandomAccessFile handle) throws IOException {
-    handle.seek(HeaderInfoLength);
-    int len = VectorIndexRows * VectorIndexCols * VectorIndexSize;
-    final byte[] buff = new byte[len];
-    int rLen = handle.read(buff);
-    if (rLen != len) {
-      throw new IOException("incomplete read: read bytes should be " + len);
-    }
-
-    return buff;
-  }
-
-  public static byte[] loadVectorIndexFromFile(String dbPath) throws IOException {
-    final RandomAccessFile handle = new RandomAccessFile(dbPath, "r");
-    final byte[] vIndex = loadVectorIndex(handle);
-    handle.close();
-    return vIndex;
-  }
-
-  public static byte[] loadContent(RandomAccessFile handle) throws IOException {
-    handle.seek(0);
-    final byte[] buff = new byte[(int) handle.length()];
-    int rLen = handle.read(buff);
-    if (rLen != buff.length) {
-      throw new IOException("incomplete read: read bytes should be " + buff.length);
-    }
-
-    return buff;
-  }
-
-  public static byte[] loadContentFromFile(String dbPath) throws IOException {
-    final RandomAccessFile handle = new RandomAccessFile(dbPath, "r");
-    final byte[] content = loadContent(handle);
-    handle.close();
-    return content;
-  }
-
-  // --- End cache load util function
-
-  // --- static util method
-
   /* get an int from a byte array start from the specified offset */
   static long getIntLong(byte[] b, int offset) {
     return (
@@ -196,13 +156,9 @@ public abstract class IpSearcher {
     );
   }
 
-  /* long int to ip string */
-  public static String long2ip(long ip) {
-    return String.valueOf((ip >> 24) & 0xFF) + '.' +
-            ((ip >> 16) & 0xFF) + '.' + ((ip >> 8) & 0xFF) + '.' + ((ip) & 0xFF);
-  }
-
-  /* check the specified ip address */
+  /**
+   * check the specified ip address
+   */
   static long checkIP(String ip) {
     String[] ps = ip.split("\\.");
     if (ps.length != 4) {
@@ -224,34 +180,81 @@ public abstract class IpSearcher {
 
   // Static Factory Methods
 
-  public static IpSearcher forVectorIndex(byte[] cBuff) {
-    return new VectorIndexIpSearcher(cBuff);
+  /**
+   * Static factory methods for file path
+   *
+   * @param db ip2region.xdb file path
+   * @return IpSearcher
+   * @throws IllegalStateException cannot read db File to bytes
+   */
+  public static IpSearcher forFile(String db) {
+    Assert.notNull(db, "db file is required");
+    return forResource(new FileSystemResource(db));
   }
 
-  public static IpSearcher forFile(String db) throws IOException {
-    return new RandomAccessFileIpSearcher(new RandomAccessFile(db, "r"));
+  /**
+   * Static factory methods for File
+   *
+   * @param db ip2region.xdb file
+   * @return IpSearcher
+   * @throws IllegalStateException cannot read db File to bytes
+   */
+  public static IpSearcher forFile(File db) {
+    Assert.notNull(db, "db file is required");
+    return forResource(new FileSystemResource(db));
   }
 
-  public static IpSearcher forBuffer(byte[] cBuff) {
-    return new MemIpSearcher(cBuff);
+  /**
+   * Static factory methods for File
+   *
+   * @param contentBuffer ip2region.xdb file content buffer
+   * @return IpSearcher
+   */
+  public static IpSearcher forBuffer(byte[] contentBuffer) {
+    Assert.notNull(contentBuffer, "db ContentBuffer is required");
+    return new MemoryIpSearcher(contentBuffer);
   }
 
-  public static class Header {
+  /**
+   * Static factory methods for Resource
+   *
+   * @param resource ip2region.xdb resource, maybe a remote ip2region.xdb resource
+   * @return IpSearcher
+   * @throws IllegalStateException cannot read resource to bytes
+   */
+  public static IpSearcher forResource(Resource resource) {
+    Assert.notNull(resource, "db resource is required");
+    try (InputStream inputStream = resource.getInputStream()) {
+      byte[] contentBuff = inputStream.readAllBytes();
+      return forBuffer(contentBuff);
+    }
+    catch (IOException e) {
+      throw new IllegalStateException("Cannot read ip2region db resource: " + resource);
+    }
+  }
 
-    public final int version;
-    public final int indexPolicy;
-    public final int createdAt;
-    public final int startIndexPtr;
-    public final int endIndexPtr;
-    public final byte[] buffer;
+  static class MemoryIpSearcher extends IpSearcher {
 
-    public Header(byte[] buff) {
-      version = getInt2(buff, 0);
-      indexPolicy = getInt2(buff, 2);
-      createdAt = getInt(buff, 4);
-      startIndexPtr = getInt(buff, 8);
-      endIndexPtr = getInt(buff, 12);
-      buffer = buff;
+    // xdb content buffer, used for in-memory search
+    private final byte[] contentBuff;
+
+    MemoryIpSearcher(byte[] contentBuff) {
+      this.contentBuff = contentBuff;
+    }
+
+    @Override
+    protected byte[] getIndexPointerBuffer(int idx) {
+      return contentBuff;
+    }
+
+    @Override
+    protected int getIndexPointerOffset(int idx) {
+      return HeaderInfoLength + idx;
+    }
+
+    @Override
+    protected void read(int offset, byte[] buffer) {
+      System.arraycopy(contentBuff, offset, buffer, 0, buffer.length);
     }
 
   }
