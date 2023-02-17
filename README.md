@@ -33,7 +33,7 @@ public abstract class IpUtils {
 
 本项目的诞生离不开以下项目：
 * [Ip2region](https://github.com/lionsoul2014/ip2region) 核心算法代码
-* [Jetbrains](https://www.jetbrains.com/?from=https://github.com/TAKETODAY/today-infrastructure): 感谢 Jetbrains 提供免费开源授权
+* [Jetbrains](https://www.jetbrains.com/?from=https://github.com/TAKETODAY/ip2region-java) 感谢 Jetbrains 提供免费开源授权
 
 ## 📄 开源协议
 

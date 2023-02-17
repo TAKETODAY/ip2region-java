@@ -1,6 +1,6 @@
 /*
  * Original Author -> Harry Yang (taketoday@foxmail.com) https://taketoday.cn
- * Copyright © TODAY & 2017 - 2023 All Rights Reserved.
+ * Copyright © Harry Yang & 2023 All Rights Reserved.
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER
  *
@@ -38,7 +38,10 @@ import cn.taketoday.lang.Nullable;
  * <p>
  * 例子
  * <pre> {@code
- *  static final IpSearcher ipSearcher = IpSearcher.forResource(new ClassPathResource("ip2region.xdb"));
+ *  static final IpSearcher ipSearcher = IpSearcher.forDefaultResourceLocation();
+ *  static final IpSearcher ipSearcher = IpSearcher.forResource(
+ *      new ClassPathResource("ip2region.xdb"));
+ *
  *  IpLocation location = ipSearcher.find("8.8.8.8");
  * }
  * </pre>
@@ -46,7 +49,7 @@ import cn.taketoday.lang.Nullable;
  * @author <a href="https://github.com/TAKETODAY">Harry Yang</a>
  * @since 1.0 2023/2/14 17:26
  */
-public abstract class IpSearcher {
+public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
   private static final String DEFAULT_LOCATION = "ip2region.xdb";
 
   // constant defined copied from the xdb maker
@@ -243,7 +246,7 @@ public abstract class IpSearcher {
     }
   }
 
-  static class MemoryIpSearcher extends IpSearcher {
+  static final class MemoryIpSearcher extends IpSearcher {
 
     // xdb content buffer, used for in-memory search
     private final byte[] contentBuff;
