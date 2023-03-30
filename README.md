@@ -1,6 +1,7 @@
 # Ip2region Java Implementation
 
 ![Java17](https://img.shields.io/badge/JDK-17+-success.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/22465e65998c41b38bcba4d8316da61a)](https://app.codacy.com/gh/TAKETODAY/ip2region-java?utm_source=github.com&utm_medium=referral&utm_content=TAKETODAY/ip2region-java&utm_campaign=Badge_Grade)
 [![GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
 [![Author](https://img.shields.io/badge/Author-Harry_Yang-blue.svg)](https://github.com/TAKETODAY)
 
