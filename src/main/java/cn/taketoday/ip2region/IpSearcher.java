@@ -54,7 +54,6 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
 
   // constant defined copied from the xdb maker
   private static final int HeaderInfoLength = 256;
-  private static final int VectorIndexRows = 256;
   private static final int VectorIndexCols = 256;
   private static final int VectorIndexSize = 8;
   private static final int SegmentIndexSize = 14;
