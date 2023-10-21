@@ -60,6 +60,12 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
 
   private static final byte[] shiftIndex = { 24, 16, 8, 0 };
 
+  /**
+   * 返回结构化的 IP 地理数据
+   *
+   * @param ip 用户输入的 IP 地址
+   * @return 结构化的地理数据
+   */
   @Nullable
   public IpLocation find(String ip) {
     String search = search(ip);
@@ -70,6 +76,15 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
     return null;
   }
 
+  /**
+   * 返回原始的的 IP 地理数据 使用 | 分割
+   * <p>
+   * 详细的格式参见 {@link #find(String)}
+   *
+   * @param ipString 用户输入的 IP 地址
+   * @return 结构化的地理数据
+   * @see #find(String)
+   */
   @Nullable
   public String search(String ipString) {
     long ip = checkIP(ipString);
