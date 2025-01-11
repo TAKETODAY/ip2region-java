@@ -1,6 +1,6 @@
 /*
  * Original Author -> Harry Yang (taketoday@foxmail.com) https://taketoday.cn
- * Copyright © Harry Yang & 2023 All Rights Reserved.
+ * Copyright © Harry Yang & 2023 - 2025 All Rights Reserved.
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER
  *
@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import cn.taketoday.core.io.ClassPathResource;
-import cn.taketoday.core.io.FileSystemResource;
-import cn.taketoday.core.io.Resource;
-import cn.taketoday.lang.Assert;
-import cn.taketoday.lang.Nullable;
+import infra.core.io.ClassPathResource;
+import infra.core.io.FileSystemResource;
+import infra.core.io.Resource;
+import infra.lang.Assert;
+import infra.lang.Nullable;
 
 /**
  * 离线IP地址定位 API, 线程安全
@@ -50,6 +50,7 @@ import cn.taketoday.lang.Nullable;
  * @since 1.0 2023/2/14 17:26
  */
 public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
+
   private static final String DEFAULT_LOCATION = "ip2region.xdb";
 
   // constant defined copied from the xdb maker
@@ -182,14 +183,14 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
   static long checkIP(String ip) {
     String[] ps = ip.split("\\.");
     if (ps.length != 4) {
-      throw new IllegalArgumentException("invalid ip address `" + ip + "`");
+      throw new IllegalArgumentException("invalid ip address `%s`".formatted(ip));
     }
 
     long ipDst = 0;
     for (int i = 0; i < ps.length; i++) {
       int val = Integer.parseInt(ps[i]);
       if (val > 255) {
-        throw new IllegalArgumentException("ip part `" + ps[i] + "` should be less then 256");
+        throw new IllegalArgumentException("ip part `%s` should be less then 256".formatted(ps[i]));
       }
 
       ipDst |= ((long) val << shiftIndex[i]);

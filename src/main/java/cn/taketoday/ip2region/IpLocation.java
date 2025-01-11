@@ -1,6 +1,6 @@
 /*
  * Original Author -> Harry Yang (taketoday@foxmail.com) https://taketoday.cn
- * Copyright © Harry Yang & 2023 All Rights Reserved.
+ * Copyright © Harry Yang & 2023 - 2025 All Rights Reserved.
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER
  *
@@ -22,8 +22,8 @@ package cn.taketoday.ip2region;
 
 import java.util.Objects;
 
-import cn.taketoday.core.style.ToStringBuilder;
-import cn.taketoday.lang.Nullable;
+import infra.core.style.ToStringBuilder;
+import infra.lang.Nullable;
 
 /**
  * Ip 地理位置
@@ -85,7 +85,7 @@ public class IpLocation {
 
   @Override
   public String toString() {
-    return ToStringBuilder.from(this)
+    return ToStringBuilder.forInstance(this)
             .append("country", country)
             .append("province", province)
             .append("city", city)

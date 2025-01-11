@@ -1,6 +1,6 @@
 /*
  * Original Author -> Harry Yang (taketoday@foxmail.com) https://taketoday.cn
- * Copyright © TODAY & 2017 - 2023 All Rights Reserved.
+ * Copyright © Harry Yang & 2023 - 2025 All Rights Reserved.
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER
  *
@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import cn.taketoday.core.io.ClassPathResource;
-import cn.taketoday.core.io.UrlResource;
-import cn.taketoday.util.StreamUtils;
+import infra.core.io.ClassPathResource;
+import infra.core.io.UrlResource;
+import infra.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +93,14 @@ class IpSearcherTests {
     IpSearcher ipSearcher = IpSearcher.forResource(UrlResource.from("https://raw.githubusercontent.com/lionsoul2014/ip2region/master/data/ip2region.xdb"));
     IpLocation ipLocation = ipSearcher.find("118.113.138.53");
     assertThat(ipLocation).isNotNull();
+  }
+
+  @Test
+  void s() {
+    IpSearcher ipSearcher = IpSearcher.forDefaultResourceLocation();
+    IpLocation ipLocation = ipSearcher.find("116.169.1.128");
+    assertThat(ipLocation).isNotNull();
+    System.out.println(ipLocation);
   }
 
 }
