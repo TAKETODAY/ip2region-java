@@ -22,7 +22,6 @@ package cn.taketoday.ip2region;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import infra.core.io.ClassPathResource;
@@ -252,9 +251,8 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
    */
   public static IpSearcher forResource(Resource resource) {
     Assert.notNull(resource, "db resource is required");
-    try (InputStream inputStream = resource.getInputStream()) {
-      byte[] contentBuff = inputStream.readAllBytes();
-      return forBuffer(contentBuff);
+    try {
+      return forBuffer(resource.getContentAsByteArray());
     }
     catch (IOException e) {
       throw new IllegalStateException("Cannot read ip2region db resource: " + resource);
