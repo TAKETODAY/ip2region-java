@@ -20,10 +20,11 @@
 
 package cn.taketoday.ip2region;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 
 import infra.core.style.ToStringBuilder;
-import infra.lang.Nullable;
 
 /**
  * Ip 地理位置

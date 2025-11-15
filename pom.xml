@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Original Author -> Harry Yang (taketoday@foxmail.com) https://taketoday.cn
-  ~ Copyright © Harry Yang & 2023 All Rights Reserved.
+  ~ Copyright © Harry Yang & 2023 - 2025 All Rights Reserved.
   ~
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER
   ~
@@ -80,7 +80,7 @@
     <dependency>
       <groupId>cn.taketoday</groupId>
       <artifactId>today-core</artifactId>
-      <version>5.0.0-Draft.2-SNAPSHOT</version>
+      <version>5.0-Draft.4-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -361,7 +361,7 @@
   <distributionManagement>
     <snapshotRepository>
       <id>snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
       <id>release</id>
