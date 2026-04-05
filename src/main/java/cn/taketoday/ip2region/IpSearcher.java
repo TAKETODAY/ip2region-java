@@ -51,7 +51,7 @@ import infra.lang.Assert;
  */
 public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
 
-  private static final String DEFAULT_LOCATION = "ip2region.xdb";
+  static final String DEFAULT_LOCATION = "ip2region.xdb";
 
   // constant defined copied from the xdb maker
   private static final int HeaderInfoLength = 256;
