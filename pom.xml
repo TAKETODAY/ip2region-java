@@ -44,6 +44,7 @@
 
     <junit5.version>5.9.2</junit5.version>
     <mockito.version>5.1.1</mockito.version>
+    <infra.version>5.0-Draft.6-SNAPSHOT</infra.version>
 
   </properties>
 
@@ -79,14 +80,18 @@
 
     <dependency>
       <groupId>cn.taketoday</groupId>
-      <artifactId>today-core</artifactId>
-      <version>5.0-Draft.4-SNAPSHOT</version>
+      <artifactId>infra-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cn.taketoday</groupId>
+      <artifactId>infra-core-aot</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.23.1</version>
       <scope>test</scope>
     </dependency>
 
@@ -143,6 +148,14 @@
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${junit5.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>cn.taketoday</groupId>
+        <artifactId>infra-dependencies</artifactId>
+        <version>${infra.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

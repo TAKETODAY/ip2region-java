@@ -1,0 +1,2 @@
+infra.aot.hint.RuntimeHintsRegistrar=\
+cn.taketoday.ip2region.IpSearcherRuntimeHints
