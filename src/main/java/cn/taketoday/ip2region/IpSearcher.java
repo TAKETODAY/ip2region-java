@@ -67,8 +67,7 @@ public abstract sealed class IpSearcher permits IpSearcher.MemoryIpSearcher {
    * @param ip 用户输入的 IP 地址
    * @return 结构化的地理数据
    */
-  @Nullable
-  public IpLocation find(String ip) {
+  public @Nullable IpLocation find(String ip) {
     String search = search(ip);
     if (search != null) {
       String[] region = search.split("\\|");
