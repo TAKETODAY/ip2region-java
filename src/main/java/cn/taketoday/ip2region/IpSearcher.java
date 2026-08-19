@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import infra.core.io.ClassPathResource;
 import infra.core.io.FileSystemResource;
 import infra.core.io.Resource;
-import infra.lang.Assert;
+import infra.util.Assert;
 
 /**
  * 离线IP地址定位 API, 线程安全
