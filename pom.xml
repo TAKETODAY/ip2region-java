@@ -44,7 +44,7 @@
 
     <junit5.version>5.9.2</junit5.version>
     <mockito.version>5.1.1</mockito.version>
-    <infra.version>5.0-Draft.6-SNAPSHOT</infra.version>
+    <infra.version>5.0-Draft.7-SNAPSHOT</infra.version>
 
   </properties>
 
